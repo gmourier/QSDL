@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <SDL2/SDL.h>
 
 SDL_Window* window = NULL;
@@ -38,6 +40,23 @@ int init_screen(unsigned int  w, unsigned int  h, const char * title) {
   return 0;
 }
 
+SDL_Surface* load_texture(const char * fpath) {
+  SDL_Surface* texture = NULL;
+
+  if (strlen(fpath) == 0) {
+    printf("ERROR: No path given\n");
+  }
+  else {
+    texture = SDL_LoadBMP(fpath);
+    if (texture == NULL) {
+      printf("ERROR: %s\n", SDL_GetError());
+    }
+  }
+
+  return texture;
+}
+
+//dev test purpose
 int main(int argc, const char * argv[]) {
   unsigned int width = 600;
   unsigned int height = 600;
