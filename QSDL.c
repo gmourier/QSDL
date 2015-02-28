@@ -1,13 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 #include <SDL2/SDL.h>
 
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
-//SDL_Window / SDL_Renderer init func
-int init_screen(unsigned int  w, unsigned int  h, const char * title) {
+int initScreen(unsigned int  w, unsigned int  h, const char * title) {
  
   if (w < 1 || h < 1) {
     printf("ERROR: width / height are invalid\n");
@@ -29,8 +29,8 @@ int init_screen(unsigned int  w, unsigned int  h, const char * title) {
     return -1;
   }
 
-  //Init renderer to take advantage of GPU Vram 
-  renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+  //Init renderer to take advantage of GPU 
+  renderer = SDL_CreateRenderer(window, -1, 0);
   if (renderer == NULL) {
     printf("ERROR: Unable to create renderer: %s\n", SDL_GetError());
     SDL_Quit();
@@ -40,7 +40,8 @@ int init_screen(unsigned int  w, unsigned int  h, const char * title) {
   return 0;
 }
 
-SDL_Surface* load_texture(const char * fpath) {
+
+SDL_Surface* loadTexture(const char * fpath) {
   SDL_Surface* texture = NULL;
 
   if (strlen(fpath) == 0) {
@@ -56,15 +57,8 @@ SDL_Surface* load_texture(const char * fpath) {
   return texture;
 }
 
-//dev test purpose
-int main(int argc, const char * argv[]) {
-  unsigned int width = 600;
-  unsigned int height = 600;
-
-  if (init_screen(width, height, "test") == 0) {
-    SDL_Delay(2000);
-  }
+int main() {
+  initScreen(640, 480, "Main");
   SDL_Quit();
-
   return EXIT_SUCCESS;
 }	
