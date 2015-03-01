@@ -1,7 +1,7 @@
 CC = gcc
 SDL = -framework SDL2
 
-CCFLAGS = -Wall -Wextra -Werror -c -std=c99
+CCFLAGS = -g -Wall -Wextra -Werror -c -std=c99
 LDFLAGS = $(SDL)
 BINARY = QSDL
 

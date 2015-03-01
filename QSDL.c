@@ -4,6 +4,7 @@
 #include <math.h>
 #include <SDL2/SDL.h>
 
+
 SDL_Window* window = NULL;
 SDL_Renderer* renderer = NULL;
 
@@ -25,6 +26,7 @@ int initScreen(unsigned int  w, unsigned int  h, const char * title) {
   window = SDL_CreateWindow(title, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, w, h, SDL_WINDOW_SHOWN);
   if (window == NULL) {
     printf("ERROR: Unable to create window: %s\n", SDL_GetError());
+    SDL_DestroyWindow(window);
     SDL_Quit();
     return -1;
   }
@@ -33,6 +35,7 @@ int initScreen(unsigned int  w, unsigned int  h, const char * title) {
   renderer = SDL_CreateRenderer(window, -1, 0);
   if (renderer == NULL) {
     printf("ERROR: Unable to create renderer: %s\n", SDL_GetError());
+    SDL_DestroyRenderer(renderer);
     SDL_Quit();
     return -1;
   }
@@ -41,24 +44,77 @@ int initScreen(unsigned int  w, unsigned int  h, const char * title) {
 }
 
 
-SDL_Surface* loadTexture(const char * fpath) {
-  SDL_Surface* texture = NULL;
+SDL_Texture* loadTexture(const char * fpath) {
+  
+  SDL_Texture* texture = NULL;
+  SDL_Surface* surface = NULL;
 
   if (strlen(fpath) == 0) {
     printf("ERROR: No path given\n");
   }
   else {
-    texture = SDL_LoadBMP(fpath);
-    if (texture == NULL) {
+    surface  = SDL_LoadBMP(fpath);
+    if (surface == NULL) {
       printf("ERROR: %s\n", SDL_GetError());
+    }
+    else {
+      texture = SDL_CreateTextureFromSurface(renderer, surface);
+      if (texture == NULL) {
+        printf("ERROR: %s\n", SDL_GetError());
+	SDL_DestroyTexture(texture);
+      }
+      SDL_FreeSurface(surface);
     }
   }
 
   return texture;
 }
 
+void drawTexture(SDL_Texture * texture) {
+  
+  if (texture == NULL) {
+    printf("ERROR: Can't draw an undefined texture\n");
+  }
+
+  SDL_RenderCopy(renderer, texture, NULL, NULL);
+}
+
+void clear() {
+  SDL_RenderClear(renderer);
+}
+
+void update() {
+  SDL_RenderPresent(renderer);
+}
+
+//Texture processing helper
+void genXOR(unsigned int  w, unsigned int h) {
+  
+  for(unsigned int x = 0; x < w; x++) {
+    for(unsigned int y = 0; y < h; y++) {
+      Uint8 c = x ^ y;
+      SDL_SetRenderDrawColor(renderer, c, c, c, 0xFF);
+      SDL_Rect rect = {x, y, 1, 1};
+      SDL_RenderFillRect(renderer, &rect);
+    }
+  }
+  
+}
+
 int main() {
   initScreen(640, 480, "Main");
+  
+  clear();
+  genXOR(256, 256);
+  update();
+
+  SDL_Delay(3000);
+
+  renderer = NULL;
+  window = NULL;
+  SDL_DestroyRenderer(renderer);
+  SDL_DestroyWindow(window);
+  SDL_QuitSubSystem(SDL_INIT_EVERYTHING);
   SDL_Quit();
   return EXIT_SUCCESS;
 }	
