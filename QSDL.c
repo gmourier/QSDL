@@ -88,24 +88,36 @@ void update() {
 }
 
 //Texture processing helper
-void genXOR(unsigned int  w, unsigned int h) {
-  
+void generateTexture(unsigned int  w, unsigned int h, char operator) {
+  Uint8 c;
+
   for(unsigned int x = 0; x < w; x++) {
     for(unsigned int y = 0; y < h; y++) {
-      Uint8 c = x ^ y;
+      switch (operator) {
+        case '^':
+	  c = x ^ y;
+	  break;
+	case '&':
+	  c = x & y;
+	  break;
+	case '|':
+	  c = x | y;
+	  break;
+	default:
+	  c = x ^ y;
+      }
       SDL_SetRenderDrawColor(renderer, c, c, c, 0xFF);
       SDL_Rect rect = {x, y, 1, 1};
       SDL_RenderFillRect(renderer, &rect);
     }
   }
-  
 }
 
 int main() {
   initScreen(640, 480, "Main");
   
   clear();
-  genXOR(256, 256);
+  generateTexture(256, 256, '^');
   update();
 
   SDL_Delay(3000);
